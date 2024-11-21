@@ -1,0 +1,40 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block 'body' %}
+<div class="d-flex h-100 text-center text-white index" 
+     style="background: url('{% static "images/background.jpg" %}') no-repeat center center; 
+            background-size: cover;">
+    <div class="d-flex w-100 h-100 p-3 mx-auto flex-column main-content">
+        <header class="mb-auto">
+            <div>
+                <!--<h3 class="float-md-start mb-0">AutoVerse</h3>-->
+                <nav class="nav nav-masthead justify-content-center float-md-end">
+                    {% if request.user.is_authenticated %}
+                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </header>
+        <main class="px-3">
+            <h2>Find a deal near you!</h2>
+            <p class="lead">Looking to buy or sell a used car?
+                </br> AutoVerse is the leading used car marketplace.</p>
+            <p class="lead">
+                <a href="{% url 'register' %}"
+                    class="btn btn-lg btn-secondary fw-bold border-white bg-white">Register</a>
+            </p>
+        </main>
+       
+        <footer class="mt-auto text-white-50">
+            <p>Copyright © {% now 'Y' %} <a href="" class="text-white">AutoVerse</a> by <a href="www.linkedin.com/in/aryankumarnci"
+                    class="text-white">Aryan Kumar</a></p>
+        </footer>
+    </div>
+</div>
+{% endblock %}
+
+{% block 'footer' %}
+{% endblock %}
