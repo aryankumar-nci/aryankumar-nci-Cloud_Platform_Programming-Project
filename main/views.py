@@ -7,7 +7,10 @@ from .forms import ListingForm
 from users.forms import LocationForm 
 from .filters import ListingFilter
 from django.core.mail import send_mail
-#from imp import reload
+from django.conf import settings
+
+import boto3
+
 
 
 def main_view(request):
