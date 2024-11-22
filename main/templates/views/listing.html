@@ -88,19 +88,19 @@
 </main>
 </main>
 <script>
-    $("#sendEmail").click(function(){
+    $("#sendEmail").click(function () {
         $.ajax({
-            type:"POST",
-            url:"{% url 'enquire_listing' id=listing.id %}",
-            data: { 'csrfmiddlewaretoken':'{{csrf_token }}'},
+            type: "POST",
+            url: "{% url 'enquire_listing' id=listing.id %}",
+            data: { csrfmiddlewaretoken: '{{ csrf_token }}' },
             dataType: "json",
-            success: function(r){
-                alert("Email sent successfully")
+            success: function (response) {
+                alert(response.message);
             },
-            error:function(rs,e){
-                alert(rs.info)
+            error: function (xhr) {
+                alert("An error occurred: " + xhr.responseJSON.message);
             }
-        })
+        });
     });
 </script>
 {% endblock  %}

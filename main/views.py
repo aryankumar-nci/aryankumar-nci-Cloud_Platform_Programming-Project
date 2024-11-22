@@ -8,6 +8,8 @@ from users.forms import LocationForm
 from .filters import ListingFilter
 from django.core.mail import send_mail
 from django.conf import settings
+from automotive.sns_email import send_sns_email
+
 
 import boto3
 
@@ -99,19 +101,23 @@ def edit_view(request, id):
         return redirect('home')
 
 @login_required
-def enquire_listing_by_email(request,id):
-    listing= get_object_or_404(Listing,id=id)
+def enquire_listing_by_email(request, id):
+    listing = get_object_or_404(Listing, id=id)
     try:
-        emailSubject = f'{request.user.username} is interested in { listing.model}'
-        emailMessage= f'Hi {listing.seller.user.username}, {request.user.username} is interested in your {listing.model} in the Autoverse'
-        send_mail(emailSubject,emailMessage,'noreply@autoverse.com'[listing.seller.user.email,],fail_silently=True)
+        email_subject = f"{request.user.username} is interested in {listing.model}"
+        email_message = (
+            f"Hello {listing.seller.user.username},\n\n"
+            f"{request.user.username} has expressed interest in your {listing.model} listed on AutoVerse.\n"
+            f"Please get in touch with them via their contact information.\n\n"
+            "Thank you for using AutoVerse!"
+        )
 
-        return JsonResponse({
-            "success":True,
-            })
+        response = send_sns_email(email_subject, email_message)
+
+        if response:
+            return JsonResponse({"success": True, "message": "Email sent successfully!"})
+        else:
+            return JsonResponse({"success": False, "message": "Failed to send email."}, status=500)
     except Exception as e:
-        print(e)
-        return JsonResponse({
-            "success":False,
-            "info":e,
-        })
+        print(f"Error: {e}")
+        return JsonResponse({"success": False, "message": str(e)}, status=500)
