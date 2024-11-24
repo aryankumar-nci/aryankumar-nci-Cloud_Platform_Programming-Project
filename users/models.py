@@ -1,17 +1,14 @@
 from email.policy import default
 from django.db import models
 from django.contrib.auth.models import User
-
-from localflavor.us.models import USStateField, USZipCodeField
-
 from .utils import user_directory_path
 
 class Location(models.Model):
     address_1 = models.CharField(max_length=128, blank=True)
     address_2 = models.CharField(max_length=128, blank=True)
     city = models.CharField(max_length=64)
-    state = USStateField(default="NY")
-    zip_code = USZipCodeField(blank=True)
+    state = models.CharField(max_length=32)
+    zip_code = models.CharField(max_length=8)
 
     def __str__(self):
         return f'Location {self.id}'
