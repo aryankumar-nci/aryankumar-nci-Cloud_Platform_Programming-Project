@@ -84,7 +84,7 @@ def edit_view(request, id):
             else:
                 messages.error(
                     request, f'An error occured while trying to edit the listing.')
-                return reload()
+                return redirect('home')
         else:
             listing_form = ListingForm(instance=listing)
             location_form = LocationForm(instance=listing.location)
