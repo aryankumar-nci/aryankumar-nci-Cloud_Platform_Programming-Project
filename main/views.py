@@ -8,9 +8,7 @@ from users.forms import LocationForm
 from .filters import ListingFilter
 from django.core.mail import send_mail
 from django.conf import settings
-from automotive.sns_email import send_sns_email
-
-
+from main.sns_email import send_sns_email
 import boto3
 
 
