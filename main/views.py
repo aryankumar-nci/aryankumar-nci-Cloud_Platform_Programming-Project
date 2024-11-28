@@ -32,27 +32,26 @@ def home_view(request):
 def list_view(request):
     if request.method == 'POST':
         try:
-            listing_form = ListingForm(request.POST,request.FILES)
-            location_form = LocationForm(request.POST,)
-            
+            listing_form = ListingForm(request.POST, request.FILES)  
+            location_form = LocationForm(request.POST)
+
             if listing_form.is_valid() and location_form.is_valid():
                 listing = listing_form.save(commit=False)
-                listing_location = location_form.save()
+                location = location_form.save()
                 listing.seller = request.user.profile
-                listing.location = listing_location
+                listing.location = location
                 listing.save()
-                messages.info(request,f'{listing.model} Listing Posted Successfully!')
+                messages.success(request, f'{listing.model} listed successfully!')
                 return redirect('home')
             else:
-                raise Exception()
+                messages.error(request, 'Invalid data. Please correct the errors.')
         except Exception as e:
-            print(e)
-            messages.error(request,'Oops! An error occured while listing')
-    elif request.method == 'GET':
-        
+            messages.error(request, f"An error occurred: {e}")
+    else:
         listing_form = ListingForm()
         location_form = LocationForm()
-    return render (request, 'views/list.html',{'listing_form':listing_form,'location_form':location_form,})
+
+    return render(request, 'views/list.html', {'listing_form': listing_form, 'location_form': location_form})
 
 @login_required
 def listing_view(request,id):
@@ -69,35 +68,37 @@ def listing_view(request,id):
 def edit_view(request, id):
     try:
         listing = Listing.objects.get(id=id)
-        if listing is None:
-            raise Exception
+        if not listing:
+            raise Exception("Listing not found")
+        
         if request.method == 'POST':
-            listing_form = ListingForm(
-                request.POST, request.FILES, instance=listing)
-            location_form = LocationForm(
-                request.POST, instance=listing.location)
-            if listing_form.is_valid and location_form.is_valid:
+            listing_form = ListingForm(request.POST, request.FILES, instance=listing)  
+            location_form = LocationForm(request.POST, instance=listing.location)
+            #print("Listing form", listing_form.is_valid(), listing_form )
+            # print("Location form", location_form.is_valid(), location_form)
+            
+            
+            
+            if location_form.is_valid():
                 listing_form.save()
                 location_form.save()
-                messages.info(request, f'Listing {id} updated successfully!')
+                messages.success(request, f'Listing {id} updated successfully!')
                 return redirect('home')
             else:
-                messages.error(
-                    request, f'An error occured while trying to edit the listing.')
-                return redirect('home')
+                
+                messages.error(request, 'Error while updating listing. Please check the details.')
         else:
             listing_form = ListingForm(instance=listing)
             location_form = LocationForm(instance=listing.location)
+
         context = {
-            'location_form': location_form,
-            'listing_form': listing_form
+            'listing_form': listing_form,
+            'location_form': location_form
         }
         return render(request, 'views/edit.html', context)
     except Exception as e:
-        messages.error(
-            request, f'An error occured while trying to access the edit page.')
+        messages.error(request, f"An error occurred: {e}")
         return redirect('home')
-
 @login_required
 def enquire_listing_by_email(request, id):
     listing = get_object_or_404(Listing, id=id)

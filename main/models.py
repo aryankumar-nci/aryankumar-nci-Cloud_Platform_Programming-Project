@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from users.models import Profile, Location
 from .consts import CARS_BRANDS, TRANSMISSION_OPTIONS
+from .utils import user_listing_path
 
 class Listing(models.Model):
     id = models.UUIDField(
@@ -23,8 +24,7 @@ class Listing(models.Model):
     location = models.OneToOneField(
         Location, on_delete=models.SET_NULL, null=True)
     
-    # Updated field to store the image URL
-    image = models.URLField(max_length=2048)
-
+    # image = models.URLField(max_length=2048)
+    image = models.ImageField(upload_to=user_listing_path, null=True)
     def __str__(self):
         return f"{self.seller.user.username}'s Listing - {self.model}"

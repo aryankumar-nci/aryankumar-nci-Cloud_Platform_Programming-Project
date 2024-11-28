@@ -5,9 +5,6 @@ from django.conf import settings
 
 
 def get_s3_client():
-    """
-    Returns a boto3 S3 client using credentials from settings.
-    """
     try:
         return boto3.client(
             "s3",
@@ -19,6 +16,7 @@ def get_s3_client():
     except ClientError as e:
         print(f"Error creating S3 client: {e}")
         raise
+
 
 
 def create_bucket():
@@ -113,32 +111,19 @@ def configure_cors():
 
 
 def upload_to_s3(file_obj, file_name):
-    """
-    Uploads a file to the S3 bucket.
-
-    Args:
-        file_obj (File): The file object to upload.
-        file_name (str): The desired name of the file in the S3 bucket.
-
-    Returns:
-        str: The URL of the uploaded file or None if the upload failed.
-    """
-    bucket_name = settings.AWS_STORAGE_BUCKET_NAME
-    if not bucket_name:
-        raise ValueError("Bucket name is not set. Ensure AWS_STORAGE_BUCKET_NAME is configured in your .env file.")
-
-    s3_client = get_s3_client()
-
     try:
+        s3_client = get_s3_client()
+        bucket_name = settings.AWS_STORAGE_BUCKET_NAME
+
         s3_client.upload_fileobj(
             file_obj,
             bucket_name,
             file_name,
-            ExtraArgs={"ACL": "public-read"}  # Make the file publicly readable
+            ExtraArgs={"ACL": "public-read"}  
         )
         return f"https://{bucket_name}.s3.{settings.AWS_S3_REGION_NAME}.amazonaws.com/{file_name}"
     except ClientError as e:
-        print(f"Error uploading file: {e}")
+        print(f"Error uploading to S3: {e}")
         return None
 
 
