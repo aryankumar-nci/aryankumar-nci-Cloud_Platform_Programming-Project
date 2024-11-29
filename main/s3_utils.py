@@ -20,9 +20,7 @@ def get_s3_client():
 
 
 def create_bucket():
-    """
-    Creates a new S3 bucket with the name specified in AWS_STORAGE_BUCKET_NAME.
-    """
+  
     bucket_name = settings.AWS_STORAGE_BUCKET_NAME
     if not bucket_name:
         raise ValueError("Bucket name is not set. Ensure AWS_STORAGE_BUCKET_NAME is configured in your .env file.")
@@ -46,9 +44,7 @@ def create_bucket():
 
 
 def add_bucket_policy():
-    """
-    Adds a public read bucket policy to the bucket specified in AWS_STORAGE_BUCKET_NAME.
-    """
+   
     bucket_name = settings.AWS_STORAGE_BUCKET_NAME
     if not bucket_name:
         raise ValueError("Bucket name is not set. Ensure AWS_STORAGE_BUCKET_NAME is configured in your .env file.")
@@ -128,15 +124,7 @@ def upload_to_s3(file_obj, file_name):
 
 
 def delete_from_s3(file_name):
-    """
-    Deletes a file from the S3 bucket.
-
-    Args:
-        file_name (str): The name of the file to delete in the S3 bucket.
-
-    Returns:
-        bool: True if the file was deleted successfully, False otherwise.
-    """
+   
     bucket_name = settings.AWS_STORAGE_BUCKET_NAME
     if not bucket_name:
         raise ValueError("Bucket name is not set. Ensure AWS_STORAGE_BUCKET_NAME is configured in your .env file.")

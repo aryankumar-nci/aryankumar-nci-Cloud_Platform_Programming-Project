@@ -103,7 +103,7 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
-AWS_SESSION_TOKEN = env("AWS_SESSION_TOKEN", default=None)
+#AWS_SESSION_TOKEN = env("AWS_SESSION_TOKEN", default=None)
 
 def get_s3_client():
     """
@@ -113,7 +113,7 @@ def get_s3_client():
         session = boto3.session.Session(
             aws_access_key_id=AWS_ACCESS_KEY_ID,
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            aws_session_token=AWS_SESSION_TOKEN,
+            #aws_session_token=AWS_SESSION_TOKEN,
             region_name=AWS_S3_REGION_NAME,
         )
         return session.client('s3')
