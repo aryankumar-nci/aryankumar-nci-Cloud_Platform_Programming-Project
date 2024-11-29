@@ -103,20 +103,26 @@ def edit_view(request, id):
 def enquire_listing_by_email(request, id):
     listing = get_object_or_404(Listing, id=id)
     try:
-        email_subject = f"{request.user.username} is interested in {listing.model}"
-        email_message = (
+        # Email details
+        subject = f"Interest in Your Listing: {listing.model}"
+        message = (
             f"Hello {listing.seller.user.username},\n\n"
-            f"{request.user.username} has expressed interest in your {listing.model} listed on AutoVerse.\n"
-            f"Please get in touch with them via their contact information.\n\n"
+            f"{request.user.username} is interested in your car listing for {listing.model}.\n"
+            f"Please contact them at {request.user.email} for further communication.\n\n"
             "Thank you for using AutoVerse!"
         )
+        sender_email = settings.DEFAULT_FROM_EMAIL
+        recipient_email = [listing.seller.user.email]  # Seller's email
 
-        response = send_sns_email(email_subject, email_message)
+        # Send email using SES
+        send_mail(
+            subject,
+            message,
+            sender_email,
+            recipient_email,
+            fail_silently=False,
+        )
 
-        if response:
-            return JsonResponse({"success": True, "message": "Email sent successfully!"})
-        else:
-            return JsonResponse({"success": False, "message": "Failed to send email."}, status=500)
+        return JsonResponse({"success": True, "message": "Email sent successfully!"})
     except Exception as e:
-        print(f"Error: {e}")
-        return JsonResponse({"success": False, "message": str(e)}, status=500)
+        return JsonResponse({"success": False, "message": f"Failed to send email: {str(e)}"}, status=500)
