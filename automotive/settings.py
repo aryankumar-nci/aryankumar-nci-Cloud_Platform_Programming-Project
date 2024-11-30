@@ -172,6 +172,6 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 EMAIL_HOST = f'email.{AWS_SES_REGION}.amazonaws.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'aryannci2024@gmail.com'  
+#DEFAULT_FROM_EMAIL = 'aryannci2024@gmail.com'  
 AWS_SES_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SES_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
