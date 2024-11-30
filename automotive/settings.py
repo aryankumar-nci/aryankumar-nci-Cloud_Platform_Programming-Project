@@ -8,6 +8,8 @@ from django.contrib.messages import constants as messages
 import environ
 import boto3
 from botocore.exceptions import NoCredentialsError
+import watchtower
+from django.utils.log import DEFAULT_LOGGING
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -104,6 +106,7 @@ AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
 #AWS_SESSION_TOKEN = env("AWS_SESSION_TOKEN", default=None)
+AWS_SNS_TOPIC_ARN = env("AWS_SNS_TOPIC_ARN")
 
 def get_s3_client():
     """
@@ -175,3 +178,38 @@ EMAIL_USE_TLS = True
 #DEFAULT_FROM_EMAIL = 'aryannci2024@gmail.com'  
 AWS_SES_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SES_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+
+
+# AWS CloudWatch Configuration
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_REGION = env("AWS_REGION")
+CLOUDWATCH_LOG_GROUP = env("CLOUDWATCH_LOG_GROUP", default="AutoVerseLogs")
+
+# CloudWatch Logging Configuration
+if not DEBUG:  
+    cloudwatch_handler = watchtower.CloudWatchLogHandler(
+        log_group=CLOUDWATCH_LOG_GROUP,
+        stream_name="AutoVerseStream",
+        boto3_session=boto3.session.Session(
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            region_name=AWS_REGION,
+        ),
+    )
+    LOGGING = DEFAULT_LOGGING.copy()
+    LOGGING['handlers']['cloudwatch'] = {
+        'level': 'INFO',
+        'class': 'watchtower.CloudWatchLogHandler',
+        'formatter': 'verbose',
+    }
+    LOGGING['loggers']['django'] = {
+        'handlers': ['console', 'cloudwatch'],
+        'level': 'INFO',
+        'propagate': False,
+    }
+    LOGGING['formatters'] = {
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    }

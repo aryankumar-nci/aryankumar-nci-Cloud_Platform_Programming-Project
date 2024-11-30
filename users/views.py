@@ -6,6 +6,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views import View
+from .sns_utils import notify_admin_new_user
 
 from main.models import Listing
 from .forms import UserForm, ProfileForm, LocationForm
@@ -50,11 +51,18 @@ class RegisterView(View):
             user = register_form.save()
             user.refresh_from_db()
             login(request, user)
+
+            # Notify admin via SNS
+            try:
+                notify_admin_new_user(username=user.username, email=user.email)
+            except Exception as e:
+                print(f"Failed to send SNS notification: {e}")
+
             messages.success(
                 request, f'User {user.username} registered successfully.')
             return redirect('home')
         else:
-            messages.error(request, f'An error occured trying to register.')
+            messages.error(request, f'An error occurred trying to register.')
             return render(request, 'views/register.html', {'register_form': register_form})
 
 
